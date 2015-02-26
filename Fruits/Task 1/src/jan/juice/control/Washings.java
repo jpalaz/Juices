@@ -2,27 +2,28 @@ package jan.juice.control;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Jan on 17.02.15.
  */
 public class Washings {
     private int size;
-    int[] matching;
-    boolean[] used;
-    boolean[] used1;
+    private int[] matching;
+    private boolean[] used;
+    private boolean[] used1;
 
-    ArrayList<ArrayList<Integer>> edges;
-    ArrayList<Juice> juices;
+    private List<List<Integer>> edges;
+    private List<Juice> juices;
 
-    public Washings(ArrayList<Juice> juices) {
+    public Washings(List<Juice> juices) {
         this.juices = juices;
-        edges = new ArrayList<ArrayList<Integer>>();
-        size = juices.size();
+        this.edges = new ArrayList<List<Integer>>();
+        this.size = juices.size();
 
-        matching = new int[size];
-        used = new boolean[size];
-        used1 = new boolean[size];
+        this.matching = new int[size];
+        this.used = new boolean[size];
+        this.used1 = new boolean[size];
     }
 
     public int solve() {
@@ -33,12 +34,12 @@ public class Washings {
 
     private void makeGraph() {
         Collections.sort(juices);
-        edges = new ArrayList<ArrayList<Integer>>();
+        edges.clear();
 
         for (int i = 0; i < juices.size(); i++) {
             edges.add(new ArrayList<Integer>());
             for (int j = i + 1; j < juices.size(); j++) {
-                if(juices.get(i).isSubJuiceOf(juices.get(j))) {
+                if (juices.get(i).isSubJuiceOf(juices.get(j))) {
                     edges.get(i).add(j);
                 }
             }
@@ -53,7 +54,7 @@ public class Washings {
 
         for (int i = 0; i < edges.size(); i++) {
             for (int j = 0; j < edges.get(i).size(); j++) {
-                if(matching[edges.get(i).get(j)] == -1) {
+                if (matching[edges.get(i).get(j)] == -1) {
                     matching[edges.get(i).get(j)] = i;
                     used1[i] = true;
                     break;
@@ -62,8 +63,10 @@ public class Washings {
         }
 
         for (int i = 0; i < size; i++) {
-            if(used1[i])
+            if (used1[i]) {
                 continue;
+            }
+
             for (int j = 0; j < size; j++) {
                 used[j] = false;
             }
@@ -72,13 +75,15 @@ public class Washings {
     }
 
     private boolean tryKuhn(int vertex) {
-        if(used[vertex])
+        if (used[vertex]) {
             return false;
+        }
 
         used[vertex] = true;
-        for (int i = 0; i < edges.get(vertex).size(); i++) {
-            int to = edges.get(vertex).get(i);
-            if(matching[to] == -1 || tryKuhn(matching[to])) {
+        List<Integer> g = edges.get(vertex);
+        for (int i = 0; i < g.size(); i++) {
+            int to = g.get(i);
+            if (matching[to] == -1 || tryKuhn(matching[to])) {
                 matching[to] = vertex;
                 return true;
             }
@@ -89,8 +94,9 @@ public class Washings {
     private int countMinWashing() {
         int edgesInMatching = 0;
         for (int i = 0; i < size; i++) {
-            if(matching[i] != -1)
+            if (matching[i] != -1) {
                 edgesInMatching++;
+            }
         }
 
         return size - edgesInMatching;

@@ -1,30 +1,32 @@
 package jan.juice.control;
 
-import java.io.*;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class Juice  implements Comparable<Juice> {
-    private TreeSet<Component> components;
+public class Juice implements Comparable<Juice> {
+    private Set<Component> components;
 
     public Juice() {
         this.components = new TreeSet<Component>();
     }
 
-    public TreeSet<Component> getComponents() {
+    public Set<Component> getComponents() {
         return components;
     }
 
     public void addComponent(Component component) {
-        components.add(component);
+        this.components.add(component);
     }
 
     public boolean isSubJuiceOf(Juice juice) {
         return this.getComponents().containsAll(juice.getComponents());
     }
 
+    /**
+     * @param juice to compare
+     * @return value to sort by increase
+     */
     public int compareTo(Juice juice) {
-        return juice.components.size() - components.size();
+        return juice.getComponents().size() - this.components.size();
     }
 }

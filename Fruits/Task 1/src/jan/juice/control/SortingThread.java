@@ -2,17 +2,17 @@ package jan.juice.control;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by Jan on 10.02.15.
  */
 public class SortingThread extends Thread {
 
-    private ArrayList<Component> components;
-    private ArrayList<Component> sortedComponents;
+    private List<Component> components;
+    private List<Component> sortedComponents;
 
-    public SortingThread(ArrayList<Component> components) {
+    public SortingThread(List<Component> components) {
         this.components = components;
     }
 
@@ -22,7 +22,7 @@ public class SortingThread extends Thread {
         Collections.sort(sortedComponents);
     }
 
-    public ArrayList<Component> getSortedComponents() {
+    public List<Component> getSortedComponents() {
         return sortedComponents;
     }
 }
