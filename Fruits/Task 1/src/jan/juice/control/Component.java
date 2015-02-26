@@ -12,12 +12,12 @@ public class Component implements Comparable<Component> {
 
     @Override
     public String toString() {
-        return name;
+        return this.name;
     }
 
     @Override
     public int compareTo(Component component) {
-        return name.compareTo(component.getName());
+        return this.name.compareTo(component.getName());
     }
 
     @Override
@@ -34,6 +34,6 @@ public class Component implements Comparable<Component> {
     }
 
     public int length() {
-        return name.length();
+        return this.name.length();
     }
 }

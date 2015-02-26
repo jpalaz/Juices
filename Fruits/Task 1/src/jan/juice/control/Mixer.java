@@ -1,17 +1,14 @@
 package jan.juice.control;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by Jan on 17.02.15.
  */
 public class Mixer {
-    private ArrayList<Juice> juices;
-    private ArrayList<Component> allComponents;
+    private List<Juice> juices;
+    private List<Component> allComponents;
     private int minWashes;
 
     public Mixer(String inputFile) {
@@ -30,18 +27,19 @@ public class Mixer {
             Juice newJuice;
             String line;
 
-            while( (line = inputFile.readLine()) != null) {
+            while ((line = inputFile.readLine()) != null) {
                 tokenizer = new StringTokenizer(line);
 
-                if(tokenizer.hasMoreElements()) {
+                if (tokenizer.hasMoreElements()) {
                     newJuice = new Juice();
-                    while(tokenizer.hasMoreTokens()) {
+                    while (tokenizer.hasMoreTokens()) {
                         newComponent = new Component(tokenizer.nextToken());
-                        if(newComponent.length() > 0) {
+                        if (newComponent.length() > 0) {
                             newJuice.addComponent(newComponent);
 
-                            if(!allComponents.contains(newComponent))
+                            if (!allComponents.contains(newComponent)) {
                                 allComponents.add(newComponent);
+                            }
                         }
                     }
 
@@ -62,22 +60,21 @@ public class Mixer {
     public void writeAllComponents(String fileName) {
         try {
             PrintWriter outFile = new PrintWriter(new FileWriter(fileName));
-            for(Component component: allComponents) {
+            for (Component component : allComponents) {
                 outFile.println(component);
             }
             outFile.flush();
             outFile.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Problem with output file.");
         }
     }
 
-    public void writeSortedComponents(String fileName, ArrayList<Component> sortedComponents) {
+    public void writeSortedComponents(String fileName, List<Component> sortedComponents) {
         try {
             PrintWriter outFile = new PrintWriter(new FileWriter(fileName));
-            for(Component component: sortedComponents) {
+            for (Component component : sortedComponents) {
                 outFile.println(component);
             }
             outFile.flush();
@@ -104,7 +101,7 @@ public class Mixer {
         setMinWashes(washings.solve());
     }
 
-    public ArrayList<Juice> getJuices() {
+    public List<Juice> getJuices() {
         return juices;
     }
 
@@ -120,7 +117,7 @@ public class Mixer {
         this.minWashes = minWashes;
     }
 
-    public ArrayList<Component> getAllComponents() {
+    public List<Component> getAllComponents() {
         return allComponents;
     }
 }

@@ -14,7 +14,7 @@ public class Main {
         mixer.writeAllComponents("juice1.out");
         mixer.countMinWashings();
 
-        if(sorting.isAlive()) {
+        if (sorting.isAlive()) {
             try {
                 sorting.join();
             } catch(InterruptedException e) { e.printStackTrace(); }
