@@ -1,0 +1,41 @@
+.main-flew {
+    position: relative;
+}
+
+.main-flew #input {
+    position: absolute;
+    bottom: 100px;
+}
+
+.conversation { 
+    /*scrolling: touch;*/    
+    overflow-x: hidden;
+    overflow-y: auto;
+    table-layout: fixed;
+}
+
+.content {
+    height: 100%;
+}
+
+.table {
+    table-layout: fixed;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.col-time {
+    width: 20%;
+}
+
+.col-message {
+    width: 70%;
+}
+
+.col-edit {
+    width: 5%;
+}
+
+.col-delete {
+    width: 5%;
+}
