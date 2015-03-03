@@ -46,8 +46,8 @@ function createRowValues(row, text){
     
     tdTime.appendChild(document.createTextNode("2015-03-03"));
     tdMessage.appendChild(document.createTextNode(text));
-    tdEdit.innerHTML = "<a class=&quot;btn-default&quot; href=&quot;#&quot;><i class=&quot;glyphicon glyphicon-edit&quot;></i></a>";
-    tdRemove.innerHTML = "<a class=&quot;btn-default&quot; href=&quot;#&quot;><i class=&quot;glyphicon glyphicon-remove&quot;></i></a>";
+    tdEdit.innerHTML = "<a class=btn-default href=&#35;><i class=glyphicon&#32;glyphicon-edit></i></a>";
+    tdRemove.innerHTML = "<a class=btn-default href=&#35;><i class=glyphicon&#32;glyphicon-remove></i></a>";
     
 	row.appendChild(tdTime);
 	row.appendChild(tdMessage);
