@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="be">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,93 +16,99 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-  </head>
-  <body>
-    <div class="navbar navbar-default navbar-static-top">
-                 <div class="container">
-                     <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#responsive-menu">
-                            <span class="sr-only">Адчыніць навігацыю</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                     </div>
-                     <div class="collapse navbar-collapse" id="responsive-menu">
-                         <ul class="nav navbar-nav">
-                             <li><a href="#">Convarsation</a></li>
-                             <li><a href="#">Message history</a></li>
-                             <!--<li><a href="#">Пункт 3</a></li>-->
-                         </ul>
-                     </div>
-                 </div>
-             </div>
-    
-    
-     <!--<div class="container">
-         <div class="row">
-            <h1 align="center">Чат</h1>
-         </div>
-     </div>-->
-     
-      <div class="container-fluid ">
-          <div class="row">
-              <div class=" col-md-4">
-                 
-                 <div class="info">
-                     <p><span class="label label-success">Connected</span></p>
-                     <p><input type="text" name="username" placeholder="Username" ></p>
-                 </div>
-                  <ul class="persons styled">
-                    <p><span class="label label-info">Participants:</span></p>    
-                    <li>Person 1</li>
-                    <li>Person 2</li>
-                    <li>Person 3</li>
-                    <li>Person 4</li>
-                  </ul>
-              </div>
-              
-              <div class="col-md-6">
-                 <table class="table conversation">
-                   <tr>
+</head>
+<body>
+
+  <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Jan Messenger</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Conversation <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">History</a></li>
+        
+      </ul>
+      <form class="navbar-form navbar-left" role="input">
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">@</span>
+            <input type="text" class="form-control" placeholder="Username..." ariadescribedby="basic-adddon1">
+        </div>
+      </form>
+      
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="label label-success">Connected</span></a></li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+   
+    <div class="container-fluid ">
+        <div class="row">
+            <div class="col-md-2 col-md-offset-2">
+                <p><span class="label label-info">Online:</span></p>
+                <ul class="persons list-group">
+                    <li class="list-group-item">Person 1</li>
+                    <li class="list-group-item">Person 2</li>
+                    <li class="list-group-item">Person 3</li>
+                    <li class="list-group-item">Person 4</li>
+                </ul>
+            </div>
+
+            <div class="col-md-6 conversation">
+                <table class="table">
+                    <tr>
                         <td class="col-time"><time>2015-02-26</time></td>
                         <td class="col-message">Person 1: Message 1.</td>
-                        <td class="col-edit"><i class="glyphicon glyphicon-edit"></i></td>
-                        <td class="col-delete"><i class="glyphicon glyphicon-remove"></td>
-                   </tr>
-                   <tr>
-                       <td class="col-time"><time>2015-02-26</time></td>
-                       <td class="col-message">Person 3: Message 2.</td>
-                       <td class="col-edit"><i class="glyphicon glyphicon-edit"></i></td>
-                       <td class="col-delete"><i class="glyphicon glyphicon-remove"></td>
-                   </tr>
+                        <td class="col-edit"><a class="btn-default" href="#"><i class="glyphicon glyphicon-edit"></i></a></td>
+                        <td class="col-delete"><a class="btn-default" href="#"><i class="glyphicon glyphicon-remove"></i></a></td>
+                    </tr>
                     <tr>
-                             <td class="col-time"><time>2015-02-27</time></td>
-                             <td class="col-message">Person 4: Message 3.</td>
-                             <td class="col-edit"><i class="glyphicon glyphicon-edit"></i></td>
-                             <td class="col-delete"><i class="glyphicon glyphicon-remove"></td>
-                         </tr>
-                         <tr>
-                             <td class="col-time"><time>2015-02-27</time></td>
-                             <td class="col-message">Person 3: Message 4.</td>
-                             <td class="col-edit"><i class="glyphicon glyphicon-edit"></i></td>
-                             <td class="col-delete"><i class="glyphicon glyphicon-remove"></i></td>
-                         </tr>
-                         
-                     </table>
-                 
-                   <form action="input.java">
-                       <textarea rows="3" cols="80" name="message" placeholder="Enter message..."></textarea>
-                        <p><input type="submit" value="Enter"></p>                      
-                    </form>
+                        <td class="col-time"><time>2015-02-26</time></td>
+                        <td class="col-message">Person 3: Message 2.</td>
+                        <td class="col-edit"><a class="btn-default" href="#"><i class="glyphicon glyphicon-edit"></i></a></td>
+                        <td class="col-delete"><a class="btn-default" href="#"><i class="glyphicon glyphicon-remove"></i></a></td>
+                    </tr>
+                    <tr>
+                        <td class="col-time"><time>2015-02-27</time></td>
+                        <td class="col-message">Person 4: Message 3.</td>
+                        <td class="col-edit"><a class="btn-default" href="#"><i class="glyphicon glyphicon-edit"></i></a></td>
+                        <td class="col-delete"><a class="btn-default" href="#"><i class="glyphicon glyphicon-remove"></i></a></td>
+                    </tr>
+                    <tr>
+                        <td class="col-time"><time>2015-02-27</time></td>
+                        <td class="col-message">Person 3: Message 4.</td>
+                        <td class="col-edit"><a class="btn-default" href="#"><i class="glyphicon glyphicon-edit"></i></a></td>
+                        <td class="col-delete"><a class="btn-default" href="#"><i class="glyphicon glyphicon-remove"></i></a></td>
+                    </tr>
+
+                </table>
+
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Input message...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-success" type="button">Send</button>
+                    </span>
                 </div>
-              </div>
-          </div>
-      </div>
+            </div>
+        </div>
+    </div>
+    </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.js"></script>
-  </body>
+</body>
 </html>
