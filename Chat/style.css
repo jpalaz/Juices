@@ -1,0 +1,43 @@
+.conversation { 
+/*
+    overflow-x: hidden;
+    overflow-y: auto;
+    table-layout: fixed;
+*/
+}
+
+.items {
+    table-layout: fixed;
+    display: block;
+    overflow-y: auto;
+    width: 100%;
+    //height: 500px;
+}
+
+.col-time {
+    width: 10%;
+}
+
+.col-message {
+    width: 90%;
+}
+
+.icon-cell {
+    background-color: #d9edf7;
+}
+
+.icon-cell:hover, .icon-cell:focus {
+    background-color: #AED3E5;
+}
+
+.glyphicon {
+    font-size: 16px;
+}
+.message-input {
+    //position: fixed;
+    //width: inherit;
+}
+
+html, body {
+    height: 100%;
+}

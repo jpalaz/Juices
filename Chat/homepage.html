@@ -7,10 +7,10 @@
     <title>Jan Messenger</title>
 
     <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
     <script src="scripts.js"></script>
 </head>
-<body onload="run();">
+<body onload="run();" onresize="onResizeDocument();">
 
   <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -29,28 +29,33 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">Conversation <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">History</a></li>
-          
+        <li><a href="#">History</a></li>          
       </ul>
       <form class="navbar-form navbar-left" role="input">
         <div class="input-group">
             <span class="input-group-addon" id="basic-addon1">@</span>
-            <input type="text" class="form-control" placeholder="Username..." ariadescribedby="basic-adddon1">
+            <input type="text" class="form-control input-name" placeholder="Username..." ariadescribedby="basic-adddon1">
         </div>
       </form>
       
       <ul class="nav navbar-nav navbar-right">
-       <li><a href="#"><span class="counter-holder">0</span></a></li>
-        <li><a href="#"><span class="label label-success">Connected</span></a></li>
+        <li class="icon-cell">
+            <a class="icon" href="#"><i class="glyphicon glyphicon-edit"></i></a>
+        </li>
+        <li class="icon-cell">
+            <a class="icon" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+        </li>
+        <li><a href="#"><span class="counter-holder badge">0</span></a></li>
+        <li id="conection-item"><a href="#"><span class="label label-success" id="conection">Connected</span></a></li>
         
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
    
-    <div class="container-fluid ">
-        <div class="row">
-            <div class="col-md-2 col-md-offset-2">
+    <div class="container-fluid">
+        <div class="row body">
+            <div class="side col-md-2 col-md-offset-2">
                 <p><span class="label label-info">Online:</span></p>
                 <ul class="persons list-group">
                     <li class="list-group-item">Person 1</li>
@@ -60,36 +65,55 @@
                 </ul>
             </div>
 
-            <div class="col-md-6 conversation">
+            <div class="side col-md-6 conversation" >
                 <table class="table items">
-                    <tr class="item">
-                        <td class="col-time"><time>2015-02-26</time></td>
-                        <td class="col-message">Person 1: Message 1.</td>
-                        <td class="col-edit"><a class="btn-default" href="#"><i class="glyphicon glyphicon-edit"></i></a></td>
-                        <td class="col-delete"><a class="btn-default" href="#"><i class="glyphicon glyphicon-remove"></i></a></td>
+                    <tr class="item" id="message1">
+                        <td class="col-time"><time>26.02<br>13:01:52</time></td>
+                        <td class="col-message list-group">
+                            <div class="list-group-item">
+                                <h4 class="list-group-item-heading">Person 1</h4>
+                                <p class="list-group-item-text">Message 1.</p>
+                            </div>
+                        </td>
+                       
                     </tr>
-                    <tr class="item">
-                        <td class="col-time"><time>2015-02-26</time></td>
-                        <td class="col-message">Person 3: Message 2.</td>
-                        <td class="col-edit"><a class="btn-default" href="#"><i class="glyphicon glyphicon-edit"></i></a></td>
-                        <td class="col-delete"><a class="btn-default" href="#"><i class="glyphicon glyphicon-remove"></i></a></td>
+                    <tr class="item" id="message2">
+                        <td class="col-time"><time>26.02<br>13:02:33</time></td>
+                        <td class="col-message list-group">
+                            <div class="list-group-item">
+                                <h4 class="list-group-item-heading">Person 3</h4>
+                                <p class="list-group-item-text">Message 2.</p>
+                            </div>
+                        </td>
+                        
                     </tr>
-                    <tr class="item">
-                        <td class="col-time"><time>2015-02-27</time></td>
-                        <td class="col-message">Person 4: Message 3.</td>
-                        <td class="col-edit"><a class="btn-default" href="#"><i class="glyphicon glyphicon-edit"></i></a></td>
-                        <td class="col-delete"><a class="btn-default" href="#"><i class="glyphicon glyphicon-remove"></i></a></td>
+                    <tr class="item" id="message3">
+                        <td class="col-time"><time>27.02<br>18:23:45</time></td>
+                        <td class="col-message list-group">
+                           <div class="list-group-item">
+                                <h4 class="list-group-item-heading">Person 4</h4>
+                                <p class="list-group-item-text">Message 3.</p>
+                            </div>
+                        </td>
+                        
                     </tr>
-                    <tr class="item">
-                        <td class="col-time"><time>2015-02-27</time></td>
-                        <td class="col-message">Person 3: Message 4.</td>
+                    <tr class="item" id="message4">
+                        <td class="col-time"><time>27.02<br>20:07:05</time></td>
+                        <td class="col-message list-group">
+                            <div class="list-group-item">
+                                <h4 class="list-group-item-heading">Person 2</h4>
+                                <p class="list-group-item-text">Message 4.</p>
+                            </div>
+                        </td>
+<!--
                         <td class="col-edit"><a class="btn-default" href="#"><i class="glyphicon glyphicon-edit"></i></a></td>
                         <td class="col-delete"><a class="btn-default" href="#"><i class="glyphicon glyphicon-remove"></i></a></td>
+-->
                     </tr>
 
                 </table>
-
-                <div class="input-group">
+<!-- -->
+                <div class="input-group message-input bottom" >
                     <input type="text" class="form-control messageText" placeholder="Input message...">
                     <span class="input-group-btn">
                         <button class="btn btn-success btn-add" type="button" id="addButton">Send</button>
