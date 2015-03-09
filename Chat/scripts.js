@@ -85,6 +85,14 @@ function onAddButtonClick() {
 
 function onNameInput(e) {
     var name = document.getElementById('input-name');
+    
+    if(!/\S/.test(name.value)) {
+        name.value = '';
+        username = '';
+        $('#input-name').popover('show');
+        return;
+    }
+    
     username = name.value;
     $('#input-name').popover('hide');
 }
@@ -177,7 +185,7 @@ function isScrollBottom(table) {
 
 function createRowValues(row, text) {
 	row.classList.add('item');
-    row.classList.add(username);
+    row.classList.add('my-message');
     row.id = "message" + document.getElementsByClassName("items")[0].rows.length;
     row.addEventListener('click', onMessageClick);
     
@@ -230,7 +238,7 @@ function makeIconsUnvisible() {
 
 function onMessageClick(e) {
     var row = document.getElementById(e.currentTarget.id);
-    if(row.classList.contains(username))
+    if(row.classList.contains('my-message'))
     {
         var message = row.getElementsByClassName('list-group-item')[0];
         
@@ -274,6 +282,7 @@ function onEditClick() {
     var text = selectedRow.getElementsByClassName('list-group-item-text')[0];
     var input = document.getElementsByClassName('messageText')[0];    
 	input.value = text.innerText;
+    input.focus();
     
     isEditing = true;
     makeIconsUnvisible();
