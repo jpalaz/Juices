@@ -15,7 +15,7 @@
 }
 
 .glyphicon {
-    font-size: 16px;
+    font-size: 17px;
 }
 
 html, body {
@@ -40,6 +40,21 @@ textarea {
 
 .input-group-btn {
     vertical-align: bottom;
+}
+
+.navbar-center {
+    align-content: center;
+}
+
+.col-time {
+    text-align: center;
+}
+
+.deleted-message {
+    color: #888;
+}
+.deleted-message .col-message p {
+    font-style: italic;
 }
 
 /*
