@@ -81,6 +81,7 @@ function onAddButtonClick(e) {
                     messageList[i].message = message.value;
                     if(!messageList[i].edited) {
                         messageList[i].edited = true;
+                        messageList[i].text = message.value;
                         selectedRow.childNodes[0].innerHTML += "<br>" + '<i class="glyphicon glyphicon-pencil"></i>';
                     }
                     break;
