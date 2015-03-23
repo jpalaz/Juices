@@ -1,0 +1,14 @@
+GET http://10.160.56.181:999/chat?token=TN18EN HTTP/1.1
+Host: 10.160.56.181:999
+Connection: keep-alive
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.89 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: be,en-US;q=0.8,en;q=0.6,ru;q=0.4
+
+
+HTTP/1.1 200 OK
+Date: Tue, 17 Mar 2015 15:46:41 GMT
+Content-length: 83
+
+{"messages":["djgfdkjg","rhdjn","fjfyj","tyhtyht","rj","fghjrkk"],"token":"TN59EN"}
