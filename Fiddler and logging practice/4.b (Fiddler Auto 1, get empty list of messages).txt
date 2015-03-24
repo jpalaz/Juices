@@ -1,0 +1,12 @@
+GET http://127.0.0.1:8888/chat?token=TN43EN HTTP/1.1
+User-Agent: Java/1.8.0_31
+Host: 127.0.0.1:8888
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Connection: keep-alive
+
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charsen=utf-8
+Content-length: 32
+
+{"messages":[],"token":"TN43EN"}
