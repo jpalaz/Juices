@@ -45,6 +45,10 @@ public class Server implements HttpHandler {
             response = doGet(httpExchange);
         } else if ("POST".equals(httpExchange.getRequestMethod())) {
             doPost(httpExchange);
+        } else if ("DELETE".equals(httpExchange.getRequestMethod())) {
+            doDelete(httpExchange);
+        } else if ("PUT".equals(httpExchange.getRequestMethod())) {
+            doPut(httpExchange);
         } else {
             response = "Unsupported http method: " + httpExchange.getRequestMethod();
         }
@@ -74,6 +78,37 @@ public class Server implements HttpHandler {
                     + ": " + message.getText());
             message.setId(history.size());
             history.add(message);
+        } catch (ParseException e) {
+            System.err.println("Invalid user message: " + httpExchange.getRequestBody() + " " + e.getMessage());
+        }
+    }
+
+    private void doDelete(HttpExchange httpExchange) {
+        String query = httpExchange.getRequestURI().getQuery();
+        if (query != null) {
+            Map<String, String> map = queryToMap(query);
+            String idToken = map.get("id");
+            if (idToken != null && !"".equals(idToken)) {
+                Integer id = Integer.parseInt(idToken);
+                Message message = history.get(id);
+                System.out.println("Delete Message from " + message.getUsername()
+                        + ": " + message.getText());
+                message.deleteMessage();
+            }
+        }
+    }
+
+    private void doPut(HttpExchange httpExchange) {
+        try {
+            Message edited = messageExchange.getClientMessageEdit(httpExchange.getRequestBody());
+            if(!"".equals(edited.getText())) {
+                Message message = history.get(edited.getId());
+                System.out.println("Before Edit: Message from " + message.getUsername()
+                        + ": " + message.getText());
+                message.editMessage(edited.getText());
+                System.out.println("After Edit: Message from " + message.getUsername()
+                        + ": " + message.getText());
+            }
         } catch (ParseException e) {
             System.err.println("Invalid user message: " + httpExchange.getRequestBody() + " " + e.getMessage());
         }

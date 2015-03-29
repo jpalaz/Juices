@@ -6,10 +6,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Client implements Runnable {
 
@@ -17,13 +14,13 @@ public class Client implements Runnable {
     private MessageExchange messageExchange = new MessageExchange();
     private String host;
     private Integer port;
-    private String username = "User" + Math.random();
+    private Random rand = new Random();
+    private String username = "User" + rand.nextInt(10000);
 
     public Client(String host, Integer port) {
         this.host = host;
         this.port = port;
     }
-
 
     public static void main(String[] args) {
         if (args.length != 2)
@@ -43,26 +40,6 @@ public class Client implements Runnable {
         URL url = new URL("http://" + host + ":" + port + "/chat?token=" + messageExchange.getToken(history.size()));
         return (HttpURLConnection) url.openConnection();
     }
-
-    /*public void getUsername() { // TODO: Repair this weird function!!!
-        HttpURLConnection connection = null;
-        try {
-            connection = getHttpURLConnection();
-            connection.connect();
-            String response = messageExchange.inputStreamToString(connection.getInputStream());
-            JSONObject jsonObject = messageExchange.getJSONObject(response);
-            username = jsonObject.get("username").toString();
-        } catch (IOException e) {
-            System.err.println("ERROR: " + e.getMessage());
-        } catch (ParseException e) {
-            System.err.println("ERROR: " + e.getMessage());
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-
-    }*/
 
     public List<Message> getMessages() {
         List<Message> list = new ArrayList<Message>();
@@ -120,8 +97,6 @@ public class Client implements Runnable {
     }
 
     public void listen() {
-        //getUsername();
-
         while (true) {
             List<Message> list = getMessages();
 

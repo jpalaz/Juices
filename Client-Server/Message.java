@@ -15,14 +15,8 @@ public class Message implements JSONAware {
         this.text = text;
         this.username = username;
         this.id = id;
+        this.edited = this.deleted = false;
     }
-
-    /*@Override
-    public String toString() {
-        return  "\"id\":\"" + id +
-                "\", \"username\":\"" + username +
-                "\", \"text\":\"" + text + "\"";
-    }*/
 
     @Override
     public String toJSONString(){
@@ -55,5 +49,19 @@ public class Message implements JSONAware {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void deleteMessage() {
+        deleted = true;
+        text = "This message has been deleted";
+    }
+
+    public void editMessage(String text) {
+        if(!deleted) {
+            edited = true;
+            this.text = text;
+        }
+        else
+            System.out.println("Message has been deleted. You can't edit it.");
     }
 }

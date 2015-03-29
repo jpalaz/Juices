@@ -38,6 +38,12 @@ public class MessageExchange {
                 Integer.parseInt(json.get("id").toString()));
     }
 
+    public Message getClientMessageEdit(InputStream inputStream) throws ParseException {
+        JSONObject json = (JSONObject)getJSONObject(inputStreamToString(inputStream)).get("message");
+        return new Message(json.get("text").toString(), "",
+                Integer.parseInt(json.get("id").toString()));
+    }
+
     public JSONObject getJSONObject(String json) throws ParseException {
         return (JSONObject) jsonParser.parse(json.trim());
     }
