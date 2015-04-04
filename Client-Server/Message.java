@@ -10,11 +10,20 @@ public class Message implements JSONAware {
     private String text;
     private boolean edited;
     private boolean deleted;
+    private String time;
 
     public Message(String text, String username, int id) {
         this.text = text;
         this.username = username;
         this.id = id;
+        this.edited = this.deleted = false;
+    }
+
+    public Message(String text, String username, int id, String time) {
+        this.text = text;
+        this.username = username;
+        this.id = id;
+        this.time = time;
         this.edited = this.deleted = false;
     }
 
@@ -24,6 +33,7 @@ public class Message implements JSONAware {
         obj.put("id", new Integer(id));
         obj.put("username", username);
         obj.put("text", text);
+        obj.put("time", time);
         return obj.toString();
     }
 

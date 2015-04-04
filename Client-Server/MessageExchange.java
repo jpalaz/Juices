@@ -32,16 +32,16 @@ public class MessageExchange {
     }
 
     public Message getClientMessage(InputStream inputStream) throws ParseException {
-        JSONObject json = (JSONObject)getJSONObject(inputStreamToString(inputStream)).get("message");
-        return new Message(json.get("text").toString(),
-                json.get("username").toString(),
-                Integer.parseInt(json.get("id").toString()));
+        JSONObject json = getJSONObject(inputStreamToString(inputStream));
+        return new Message(json.get("text").toString(), json.get("username").toString(),
+                Integer.parseInt(json.get("id").toString()), json.get("time").toString());
     }
 
     public Message getClientMessageEdit(InputStream inputStream) throws ParseException {
         JSONObject json = (JSONObject)getJSONObject(inputStreamToString(inputStream)).get("message");
         return new Message(json.get("text").toString(), "",
-                Integer.parseInt(json.get("id").toString()));
+                Integer.parseInt(json.get("id").toString()),
+                json.get("time").toString());
     }
 
     public JSONObject getJSONObject(String json) throws ParseException {

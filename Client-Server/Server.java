@@ -11,9 +11,13 @@ import java.net.InetSocketAddress;
 import java.util.*;
 
 public class Server implements HttpHandler {
-    private List<Message> history = new ArrayList<Message>();
     private MessageExchange messageExchange = new MessageExchange();
     private TreeSet<String> clientsNames = new TreeSet<String>();
+    private static Message[] predefinedTasks = {
+            new Message("Hello, World!", "User1", 0, "04.04<br>15:09:49"),
+            new Message("Hello!", "World", 1, "04.04<br>15:11:20")
+    };
+    private List<Message> history = new ArrayList<Message>(Arrays.asList(predefinedTasks));
 
     public static void main(String[] args) {
         if (args.length != 1)
@@ -39,6 +43,7 @@ public class Server implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
+        System.out.println("Begin request " + httpExchange.getRequestMethod());
         String response = "";
 
         if ("GET".equals(httpExchange.getRequestMethod())) {
@@ -49,15 +54,21 @@ public class Server implements HttpHandler {
             doDelete(httpExchange);
         } else if ("PUT".equals(httpExchange.getRequestMethod())) {
             doPut(httpExchange);
+        } else if ("OPTIONS".equals(httpExchange.getRequestMethod())) {
+            response = "";
         } else {
             response = "Unsupported http method: " + httpExchange.getRequestMethod();
         }
 
         sendResponse(httpExchange, response);
+        System.out.println("Response sent, size " + response.length());
+        System.out.println("End request " + httpExchange.getRequestMethod());
     }
 
     private String doGet(HttpExchange httpExchange) {
         String query = httpExchange.getRequestURI().getQuery();
+        System.out.println("Query " + query);
+
         if (query != null) {
             Map<String, String> map = queryToMap(query);
             String token = map.get("token");
@@ -85,6 +96,8 @@ public class Server implements HttpHandler {
 
     private void doDelete(HttpExchange httpExchange) {
         String query = httpExchange.getRequestURI().getQuery();
+        System.out.println("Query " + query);
+
         if (query != null) {
             Map<String, String> map = queryToMap(query);
             String idToken = map.get("id");
@@ -118,15 +131,24 @@ public class Server implements HttpHandler {
         try {
             byte[] bytes = response.getBytes();
             Headers headers = httpExchange.getResponseHeaders();
-            headers.add("Access-Control-Allow-Origin","*");
+            headers.add("Access-Control-Allow-Origin", "*");
+
+            if ("OPTIONS".equals(httpExchange.getRequestMethod())) {
+                headers.add("Access-Control-Allow-Methods", "PUT, DELETE, POST, GET, OPTIONS");
+            }
+
             httpExchange.sendResponseHeaders(200, bytes.length);
-            OutputStream os = httpExchange.getResponseBody();
-            os.write( bytes);
-            os.flush();
-            os.close();
+            writeBody(httpExchange, bytes);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void writeBody(HttpExchange httpExchange, byte[] bytes) throws IOException {
+        OutputStream os = httpExchange.getResponseBody();
+        os.write( bytes);
+        os.flush();
+        os.close();
     }
 
     private Map<String, String> queryToMap(String query) {
