@@ -13,11 +13,11 @@ import java.util.*;
 public class Server implements HttpHandler {
     private MessageExchange messageExchange = new MessageExchange();
     private TreeSet<String> clientsNames = new TreeSet<String>();
-    private static Message[] predefinedTasks = {
+    private static Message[] predefinedMessages = {
             new Message("Hello, World!", "User1", 0, "04.04<br>15:09:49"),
             new Message("Hello!", "World", 1, "04.04<br>15:11:20")
     };
-    private List<Message> history = new ArrayList<Message>(Arrays.asList(predefinedTasks));
+    private List<Message> messages = new ArrayList<Message>(Arrays.asList(predefinedMessages));
 
     public static void main(String[] args) {
         if (args.length != 1)
@@ -72,9 +72,12 @@ public class Server implements HttpHandler {
         if (query != null) {
             Map<String, String> map = queryToMap(query);
             String token = map.get("token");
+            System.out.println("Token " + token);
+
             if (token != null && !"".equals(token)) {
                 int index = messageExchange.getIndex(token);
-                return messageExchange.getServerResponse(history.subList(index, history.size()));
+                System.out.println("Index " + index);
+                return messageExchange.getServerResponse(messages, index);
             } else {
                 return "Token query parameter is absent in url: " + query;
             }
@@ -87,8 +90,8 @@ public class Server implements HttpHandler {
             Message message = messageExchange.getClientMessage(httpExchange.getRequestBody());
             System.out.println("Get Message from " + message.getUsername()
                     + ": " + message.getText());
-            message.setId(history.size());
-            history.add(message);
+            message.setId(messages.size());
+            messages.add(message);
         } catch (ParseException e) {
             System.err.println("Invalid user message: " + httpExchange.getRequestBody() + " " + e.getMessage());
         }
@@ -103,7 +106,7 @@ public class Server implements HttpHandler {
             String idToken = map.get("id");
             if (idToken != null && !"".equals(idToken)) {
                 Integer id = Integer.parseInt(idToken);
-                Message message = history.get(id);
+                Message message = messages.get(id);
                 System.out.println("Delete Message from " + message.getUsername()
                         + ": " + message.getText());
                 message.deleteMessage();
@@ -115,7 +118,7 @@ public class Server implements HttpHandler {
         try {
             Message edited = messageExchange.getClientMessageEdit(httpExchange.getRequestBody());
             if(!"".equals(edited.getText())) {
-                Message message = history.get(edited.getId());
+                Message message = messages.get(edited.getId());
                 System.out.println("Before Edit: Message from " + message.getUsername()
                         + ": " + message.getText());
                 message.editMessage(edited.getText());

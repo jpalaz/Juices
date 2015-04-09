@@ -5,12 +5,12 @@ import org.json.simple.JSONObject;
  * Created by Jan on 27.03.15.
  */
 public class Message implements JSONAware {
+    private String text;
     private String username;
     private int id;
-    private String text;
+    private String time;
     private boolean edited;
     private boolean deleted;
-    private String time;
 
     public Message(String text, String username, int id) {
         this.text = text;
@@ -27,13 +27,24 @@ public class Message implements JSONAware {
         this.edited = this.deleted = false;
     }
 
+    public Message(String text, String username, int id, String time, boolean edited, boolean deleted) {
+        this.text = text;
+        this.username = username;
+        this.id = id;
+        this.time = time;
+        this.edited = edited;
+        this.deleted = deleted;
+    }
+
     @Override
     public String toJSONString(){
         JSONObject obj = new JSONObject();
-        obj.put("id", new Integer(id));
+        obj.put("id", id);
         obj.put("username", username);
         obj.put("text", text);
         obj.put("time", time);
+        obj.put("deleted", deleted);
+        obj.put("edited", edited);
         return obj.toString();
     }
 

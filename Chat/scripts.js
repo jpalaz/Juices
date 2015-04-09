@@ -4,21 +4,14 @@ var username;
 var selectedRow = null;
 var isEditing = false;
 
-var uniqueId = function() {
-    return 1;
-    /*var date = Date.now();
-    var random = Math.random() * Math.random();
-    return Math.floor(date * random).toString();*/
-};
-
-var createMessage = function(text, time) {
+var createMessage = function(text) {
     return {
         username: username,
         text: text,
-        time: time,
+        time: getCurrentTime(),
         edited: false,
         deleted: false,
-        id: uniqueId()
+        id: -1//this ID has not power // uniqueId()
     };
 };
 
@@ -28,8 +21,7 @@ var appState = {
     token : 'TE11EN'
 };
 
-function run(e) {
-    username = restoreUsername() || "";
+function run() {
     delegateEvents();
     restoreMessages();
 
@@ -49,12 +41,14 @@ function run(e) {
 function delegateEvents() { // Call after restoring username!
     var nameInput = document.getElementById('input-name');
     nameInput.addEventListener('focusout', onNameInput);
-    nameInput.value = username;
+    nameInput.value = username = restoreUsername() || "";
 
     document.getElementById('add-button').addEventListener('click', onAddButtonClick);
-    document.getElementsByClassName('messageText')[0].addEventListener('keydown', onTextInput);
-    document.getElementsByClassName('icon')[0].addEventListener('click', onEditClick);
-    document.getElementsByClassName('icon')[1].addEventListener('click', onRemoveClick);
+    document.getElementById('message-text').addEventListener('keydown', onTextInput);
+
+    var icons = document.getElementsByClassName('icon');
+    icons[0].addEventListener('click', onEditClick);
+    icons[1].addEventListener('click', onRemoveClick);
 }
 
 function restoreUsername() {
@@ -77,28 +71,57 @@ function restoreMessages(continueWith) {
         appState.token = response.token;
         createAllMessages(response.messages);
         updateCounter();
+        onConnectionSet();
 
+        continueWith && continueWith();
+        setTimeout(restoreMessages(), 3000);
+    });
+}
+
+function sendMessage(message, continueWith) {
+    post(appState.mainUrl, JSON.stringify(message), function(){
+        onConnectionSet();
+        //restoreMessages();
         continueWith && continueWith();
     });
 }
 
-function addMessage(message, continuteWith) {
-    post(appState.mainUrl, JSON.stringify(message), function(){
-        restoreMessages();
-    });
-}
-
-function addMessageInternal(message) {
+function addMessageToHTML(message) {
     var table = document.getElementsByClassName('table')[0];
     var bottomScroll = isScrollBottom(table);
-
     var row = table.insertRow(-1);
-    createRowValues(row, message);
+
+    createItem(row, message);
+    updateItem(row, message);
+    appState.messages.push(message);
 
     if(bottomScroll)
         table.scrollTop = table.scrollHeight;
+}
 
-    updateCounter();
+function createItem(row, message) {
+    row.innerHTML = '<td class="col-time"></td><td class="col-message">' +
+        '<div class="list-group-item"><h4 class="list-group-item-heading"></h4>' +
+        '<div class="wrap"><p class="list-group-item-text"></p></div></div></td>';
+    row.setAttribute('id', message.id);
+    row.classList.add('item');
+    row.addEventListener('click', onMessageClick);
+
+    row.lastChild.firstChild.firstChild.innerText = message.username;
+    row.lastChild.firstChild.firstChild.innerHTML = message.username;
+    row.firstChild.innerHTML = message.time;
+}
+
+function updateItem(row, message) {
+    row.lastChild.firstChild.lastChild.firstChild.innerText = message.text;
+    row.lastChild.firstChild.lastChild.firstChild.innerHTML = message.text;
+
+    if(message.deleted) {
+        row.firstChild.innerHTML =  message.time + '<br>' + '<i class="glyphicon glyphicon-trash"></i>';
+        row.classList.add('deleted-message');
+    } else if(message.edited) {
+        row.firstChild.innerHTML = message.time + '<br>' + '<i class="glyphicon glyphicon-pencil"></i>';
+    }
 }
 
 function onResizeDocument(e) {
@@ -110,86 +133,43 @@ function onResizeDocument(e) {
     document.getElementsByClassName('table')[0].style.height = height;
 }
 
-function onTextInput(e) {
-    if(isEditing == true) {
-        if(e.currentTarget.value.length == 0) {
-            isEditing = false;
-            selectedRow = null;
-        }
-    }
+function onTextInput(event) {
+    if ((isEditing == true) && (event.currentTarget.value.length == 0)){
+        isEditing = false;
+        selectedRow = null;
+    } else if (event.keyCode == 13) { // ENTER was pressed
+        event.preventDefault();
 
-    var key = e.keyCode;
-    if (key == 13) { // 13 is enter
-        e.preventDefault();
-        if(e.shiftKey)
-        {
-            var message = document.getElementsByClassName('messageText')[0];
-            var caretPos = getCaretPosition(message);
-            var text = message.value;
-            var br = '\n';
-            message.value = text.slice(0, caretPos) + br + text.slice(caretPos);
-            setCaretPosition(message, caretPos + 1);
+        if (event.shiftKey) {
+            var textarea = document.getElementById('message-text');
+            var caretPos = getCaretPosition(textarea);
+            textarea.value = textarea.value.slice(0, caretPos) + '\n' + textarea.value.slice(caretPos);
+            setCaretPosition(textarea, caretPos + 1);
         }
         else {
             onAddButtonClick();
         }
-
-        return false;
     }
 }
 
 function onAddButtonClick(e) {
-    var messageTextarea = document.getElementsByClassName('messageText')[0];
+    var textarea = document.getElementById('message-text');
 
     if (isEditing) {
-        editMessage(messageTextarea);
-        return;
-    }
-
-    if (username.length === 0) {
+        var index = findMessageToEdit();
+        if (index != -1)
+            editMessage(appState.messages[index], textarea);
+    } else if (username.length === 0) { // Empty username
         $('#input-name').popover('show');
         document.getElementById('input-name').focus();
-        return;
+    } else if(!/\S/.test(textarea.value)) { // Empty message
+        textarea.value = '';
+    } else {
+        var createdMessage = createMessage(textarea.value);
+        sendMessage(createdMessage, function () {
+            textarea.value = '';
+        });
     }
-
-    if(!/\S/.test(messageTextarea.value)) {
-        messageTextarea.value = '';
-        return;
-    }
-
-    var createdMessage = createMessage(messageTextarea.value, getCurrentTime());
-    //addMessageInternal(createdMessage);
-    //appState.messages.push(createdMessage);
-    messageTextarea.value = '';
-    addMessage(createdMessage, function() {
-        updateCounter();
-    });
-}
-
-function editMessage(messageTextarea) {
-    var table = document.getElementsByClassName('table')[0];
-    var bottomScroll = isScrollBottom(table);
-
-    selectedRow.getElementsByClassName('list-group-item-text')[0].innerText = messageTextarea.value;
-    var messageId = selectedRow.getAttribute('id');
-    for (var i = 0; i < appState.messages.length; i++)
-        if (messageId == appState.messages[i].id) {
-            appState.messages[i].message = messageTextarea.value;
-            if(!appState.messages[i].edited) {
-                appState.messages[i].edited = true;
-                appState.messages[i].text = messageTextarea.value;
-                selectedRow.childNodes[0].innerHTML += "<br>" + '<i class="glyphicon glyphicon-pencil"></i>';
-            }
-            break;
-        }
-
-    messageTextarea.value = '';
-    if(bottomScroll)
-        table.scrollTop = table.scrollHeight;
-
-    isEditing = false;
-    selectedRow = null;
-    storeMessages();
 }
 
 function onNameInput(e) {
@@ -199,149 +179,43 @@ function onNameInput(e) {
         username = '';
         storeUsername();
         $('#input-name').popover('show');
-        return;
-    }
-
-    username = name.value;
-    storeUsername();
-    $('#input-name').popover('hide');
-}
-
-function getCaretPosition (textarea) {
-    var caretPos = 0;
-    if (document.selection) {
-        textarea.focus ();
-        var select = document.selection.createRange ();
-        select.moveStart ('character', -textarea.value.length);
-        caretPos = select.text.length;
-    }
-    else if (textarea.selectionStart || textarea.selectionStart == '0')
-        caretPos = textarea.selectionStart;
-    return caretPos;
-}
-
-function setCaretPosition(textarea, pos) {
-    if (textarea.setSelectionRange)	{
-        textarea.focus();
-        textarea.setSelectionRange(pos, pos);
-    }
-    else if (textarea.createTextRange) {
-        var range = textarea.createTextRange();
-        range.collapse(true);
-        range.moveEnd('character', pos);
-        range.moveStart('character', pos);
-        range.select();
-    }
-}
-
-function isScrollBottom(table) {
-    var bottomScroll = false;
-    var h1 = table.scrollHeight - table.scrollTop;
-
-    var h2 = table.clientHeight;
-    if(table.firstElementChild.lastChild.scrollHeight != undefined)
-        h2 += table.firstElementChild.lastChild.scrollHeight;
-
-    if(h1 <= h2)
-        bottomScroll = true;
-
-    return bottomScroll;
-}
-
-function createRowValues(row, message) {
-    row.classList.add('item');
-    if(message.isMyMessage)
-        row.classList.add('my-message');
-    row.addEventListener('click', onMessageClick);
-    row.setAttribute('id', message.id);
-
-    var tdTime = document.createElement('td');
-    var tdMessage = document.createElement('td');
-    var divMessage = document.createElement('div');
-    var user = document.createElement('h4');
-    var wrap = document.createElement('div');
-    var text = document.createElement('p');
-
-    tdTime.classList.add('col-time');
-    tdMessage.classList.add('col-message');
-    divMessage.classList.add('list-group-item');
-    user.classList.add('list-group-item-heading');
-    wrap.classList.add('wrap');
-    text.classList.add('list-group-item-text');
-
-    user.innerText = message.username;
-    text.innerText = message.text;
-    tdTime.innerHTML = message.time;
-
-    if(message.deleted) {
-        tdTime.innerHTML += "<br>" + '<i class="glyphicon glyphicon-trash"></i>';
-        row.classList.add('deleted-message');
-    } else if(message.edited) {
-        tdTime.innerHTML += "<br>" + '<i class="glyphicon glyphicon-pencil"></i>';
-    }
-
-    row.appendChild(tdTime);
-    divMessage.appendChild(user);
-    wrap.appendChild(text);
-    divMessage.appendChild(wrap);
-    tdMessage.appendChild(divMessage);
-    row.appendChild(tdMessage);
-}
-
-function getCurrentTime() {
-    var date = new Date();
-    var time = ('0' + date.getDate()).slice(-2) + '.' + ('0' + (date.getMonth()+1)).slice(-2) + "<br>";
-    time += ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
-    time += ':' + ('0' + date.getSeconds()).slice(-2);
-    return time;
-}
-
-function setIconsVisible(visible) {
-    if(visible) {
-        document.getElementsByClassName('icon')[0].style.display = "block";
-        document.getElementsByClassName('icon')[1].style.display = "block";
     } else {
-        document.getElementsByClassName('icon')[0].style.display = "none";
-        document.getElementsByClassName('icon')[1].style.display = "none";
+        username = name.value;
+        storeUsername();
+        $('#input-name').popover('hide');
     }
 }
 
-function onMessageClick(e) {
-    var row = document.getElementById(e.currentTarget.id);
-    if(row.classList.contains('my-message'))
-    {
-        var message = row.getElementsByClassName('list-group-item')[0];
+function onMessageClick(event) {
+    if (appState.messages[event.currentTarget.id].username != username)
+        return;
 
-        if(row.classList.contains('info'))
-        {
-            row.classList.remove('info');
-            message.classList.remove('active');
-            selectedRow = null;
+    var row = document.getElementById(event.currentTarget.id);
+    if (row.classList.contains('deleted-message'))
+        return;
 
-            setIconsVisible(false);
-        }
-        else
-        {
-            if(selectedRow != null)
-            {
-                selectedRow.classList.remove('info');
-                var selectedMessage = selectedRow.getElementsByClassName('list-group-item')[0];
-                selectedMessage.classList.remove('active');
-            }
-
-            row.classList.add('info');
-            message.classList.add('active');
-            selectedRow = row;
-
-            setIconsVisible(true);
-        }
+    var selection;
+    if (selectedRow != row) {
+        setMessageActive(row, true);
+        selection = row;
+        setIconsVisible(true);
     }
+    if (selectedRow != null) {
+        setMessageActive(selectedRow, false);
+        selection = null;
+        setIconsVisible(false);
+    }
+    selectedRow = selection;
 }
 
-function updateCounter() {
-    var counter = document.getElementsByClassName('counter-holder')[0];
-    var count = document.getElementsByClassName("items")[0].rows.length;
-    counter.innerText = count.toString();
+function setMessageActive(row, active) {
+    if (active) {
+        row.classList.add('info');
+        row.lastChild.firstChild.classList.add('active');
+    } else {
+        row.classList.remove('info');
+        row.lastChild.firstChild.classList.remove('active');
+    }
 }
 
 function onEditClick() {
@@ -349,7 +223,7 @@ function onEditClick() {
         return;
 
     var text = selectedRow.getElementsByClassName('list-group-item-text')[0];
-    var input = document.getElementsByClassName('messageText')[0];
+    var input = document.getElementById('message-text');
     input.value = text.innerText;
     input.focus();
 
@@ -365,29 +239,50 @@ function onRemoveClick() {
     if(selectedRow == null)
         return;
 
-    selectedRow.classList.remove('my-message');
-    var messageId = selectedRow.getAttribute('id');
-    var time;
-    for(var i = 0; i < appState.messages.length; ++i) {
-        if(messageId == appState.messages[i].id) {
-            appState.messages[i].deleted = true;
-            appState.messages[i].text = "This message has been deleted.";
-            appState.messages[i].isMyMessage = false;
-            time = appState.messages[i].time;
-            storeMessages();
-            break;
+    var index = findMessageToEdit();
+    if (index != -1)
+        removeMessage(appState.messages[index]);
+}
+
+function findMessageToEdit() {
+    var id = selectedRow.getAttribute('id');
+    var messages = appState.messages;
+
+    for (var i = 0; i < messages.length; i++)
+        if (id == messages[i].id) {
+            return i;
         }
-    }
+    return -1;
+}
 
-    selectedRow.childNodes[1].childNodes[0].childNodes[1].innerText = 'This message has been deleted.';
-    selectedRow.childNodes[0].innerHTML = time + "<br>" + '<i class="glyphicon glyphicon-trash"></i>';
-    selectedRow.getElementsByClassName('list-group-item')[0].classList.remove('active');
-    selectedRow.classList.remove('info');
-    selectedRow.classList.add('deleted-message');
+function editMessage(message, textarea) {
+    message.edited = true;
+    message.text = textarea.value;
 
-    selectedRow = null;
-    setIconsVisible(false);
-    updateCounter();
+    put(appState.mainUrl, JSON.stringify(message), function() {
+        var table = document.getElementsByClassName('table')[0];
+        var isBottomScroll = isScrollBottom(table);
+
+        updateItem(selectedRow, message);
+        textarea.value = '';
+        isEditing = false;
+        selectedRow = null;
+
+        if(isBottomScroll)
+            table.scrollTop = table.scrollHeight;
+    });
+}
+
+function removeMessage(message) {
+    message.text = 'This message has been deleted.';
+    message.deleted = true;
+
+    deleteRequest(appState.mainUrl + '?id=' + message.id, function() {
+        updateItem(selectedRow, message);
+        setMessageActive(selectedRow, false);
+        selectedRow = null;
+        setIconsVisible(false);
+    });
 }
 
 function onConnectionLost() {
@@ -409,13 +304,12 @@ function storeUsername() {
         alert('localStorage is not accessible');
         return;
     }
-
     localStorage.setItem("Chat Username", JSON.stringify(username));
 }
 
 function createAllMessages(allMessages) {
     for (var i = 0; i < allMessages.length; i++)
-        addMessageInternal(allMessages[i]);
+        addMessageToHTML(allMessages[i]);
 }
 
 function defaultErrorHandler(message) {
@@ -432,6 +326,10 @@ function post(url, data, continueWith, continueWithError) {
 
 function put(url, data, continueWith, continueWithError) {
     ajax('PUT', url, data, continueWith, continueWithError);
+}
+
+function deleteRequest(url, continueWith, continueWithError) {
+    ajax('DELETE', url, null, continueWith, continueWithError);
 }
 
 function isError(text) {
@@ -452,7 +350,7 @@ function ajax(method, url, data, continueWith, continueWithError) {
 
     continueWithError = continueWithError || defaultErrorHandler;
     xhr.open(method || 'GET', url, true);
-    onConnectionSet();
+
     xhr.onload = function () {
         if (xhr.readyState !== 4)
             return;
@@ -475,9 +373,9 @@ function ajax(method, url, data, continueWith, continueWithError) {
     xhr.ontimeout = function () {
         onConnectionLost();
         continueWithError('Server timed out !');
-    }
+    };
 
-    xhr.onerror = function (e) {
+    xhr.onerror = function () {
         onConnectionLost();
         var errMsg = 'Server connection error !\n'+
             '\n' +

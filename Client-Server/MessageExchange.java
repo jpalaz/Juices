@@ -1,3 +1,4 @@
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,10 +19,13 @@ public class MessageExchange {
         return (Integer.valueOf(token.substring(2, token.length() - 2)) - 11) / 8;
     }
 
-    public String getServerResponse(List<Message> messages) {
+    public String getServerResponse(List<Message> messages, int index) {
+        List<Message> responseMessages = messages.subList(index, messages.size());
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("messages", messages);
+
+        jsonObject.put("messages", responseMessages);
         jsonObject.put("token", getToken(messages.size()));
+
         return jsonObject.toJSONString();
     }
 
@@ -38,10 +42,11 @@ public class MessageExchange {
     }
 
     public Message getClientMessageEdit(InputStream inputStream) throws ParseException {
-        JSONObject json = (JSONObject)getJSONObject(inputStreamToString(inputStream)).get("message");
-        return new Message(json.get("text").toString(), "",
-                Integer.parseInt(json.get("id").toString()),
-                json.get("time").toString());
+        JSONObject json = getJSONObject(inputStreamToString(inputStream));
+        return new Message(json.get("text").toString(), json.get("username").toString(),
+                Integer.parseInt(json.get("id").toString()), json.get("time").toString(),
+                Boolean.parseBoolean(json.get("edited").toString()),
+                Boolean.parseBoolean(json.get("deleted").toString()));
     }
 
     public JSONObject getJSONObject(String json) throws ParseException {

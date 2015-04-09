@@ -69,21 +69,9 @@
             </div>
 
             <div class="side col-md-6 col-lg-6 col-sm-7 col-xs-8 conversation" >
-                <table class="table items table-hover">
-                    <tr class="item" id="message1">
-                        <td class="col-time"><time>26.02<br>13:01:52</time></td>
-                        <td class="col-message">
-                            <div class="list-group-item">
-                                <h4 class="list-group-item-heading">Jan</h4>
-                                <p class="list-group-item-text">Hello, World!<br>You can write multiline messages!
-                                <br>This version can only save your messages' history on local storage.</p>
-                            </div>
-                        </td>    
-                    </tr>
-                   
-                </table>
+                <table class="table items table-hover"></table>
                 <div class="input-group" id="message-input" data-placement="left" data-trigger="hover" data-toggle="popover" title="Press:" data-content="'SHIFT+ENTER' to add new line; 'ENTER' to send message.">
-                    <textarea type="text" class="form-control messageText" placeholder="Input message..." rows="4"></textarea>
+                    <textarea type="text" class="form-control" id="message-text" placeholder="Input message..." rows="4"></textarea>
                     <span class="input-group-btn">
                         <button class="btn btn-primary" type="button" id="add-button">Send</button>
                     </span>
@@ -94,6 +82,7 @@
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="js/bootstrap.js"></script>
+    <script src="utils.js"></script>
     <script src="scripts.js"></script>
 </body>
 </html>
