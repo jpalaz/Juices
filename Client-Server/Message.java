@@ -36,6 +36,20 @@ public class Message implements JSONAware {
         this.deleted = deleted;
     }
 
+    public Message(Message message, boolean deleted) {
+        this.username = message.username;
+        this.id = message.id;
+        this.time = message.time;
+        this.edited = message.edited;
+
+        if (deleted)
+            this.deleteMessage();
+        else {
+            this.text = message.text;
+            this.deleted = message.deleted;
+        }
+    }
+
     @Override
     public String toJSONString(){
         JSONObject obj = new JSONObject();

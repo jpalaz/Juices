@@ -81,7 +81,6 @@ function restoreMessages(continueWith) {
 function sendMessage(message, continueWith) {
     post(appState.mainUrl, JSON.stringify(message), function(){
         onConnectionSet();
-        //restoreMessages();
         continueWith && continueWith();
     });
 }
@@ -194,18 +193,19 @@ function onMessageClick(event) {
     if (row.classList.contains('deleted-message'))
         return;
 
-    var selection;
-    if (selectedRow != row) {
+    if (selectedRow == row) {
+        setMessageActive(row, false);
+        selectedRow = null;
+        setIconsVisible(false);
+    } else {
+        if (selectedRow != null) {
+            setMessageActive(selectedRow, false);
+        }
+
         setMessageActive(row, true);
-        selection = row;
+        selectedRow = row;
         setIconsVisible(true);
     }
-    if (selectedRow != null) {
-        setMessageActive(selectedRow, false);
-        selection = null;
-        setIconsVisible(false);
-    }
-    selectedRow = selection;
 }
 
 function setMessageActive(row, active) {
@@ -263,7 +263,6 @@ function editMessage(message, textarea) {
         var table = document.getElementsByClassName('table')[0];
         var isBottomScroll = isScrollBottom(table);
 
-        updateItem(selectedRow, message);
         textarea.value = '';
         isEditing = false;
         selectedRow = null;
@@ -278,7 +277,6 @@ function removeMessage(message) {
     message.deleted = true;
 
     deleteRequest(appState.mainUrl + '?id=' + message.id, function() {
-        updateItem(selectedRow, message);
         setMessageActive(selectedRow, false);
         selectedRow = null;
         setIconsVisible(false);
@@ -308,8 +306,13 @@ function storeUsername() {
 }
 
 function createAllMessages(allMessages) {
-    for (var i = 0; i < allMessages.length; i++)
-        addMessageToHTML(allMessages[i]);
+    for (var i = 0; i < allMessages.length; i++) {
+        if (allMessages[i].id < appState.messages.length) {
+            var row = document.getElementById(allMessages[i].id.toString());
+            updateItem(row, allMessages[i]);
+        } else
+            addMessageToHTML(allMessages[i]);
+    }
 }
 
 function defaultErrorHandler(message) {

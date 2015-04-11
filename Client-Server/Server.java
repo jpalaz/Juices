@@ -18,6 +18,7 @@ public class Server implements HttpHandler {
             new Message("Hello!", "World", 1, "04.04<br>15:11:20")
     };
     private List<Message> messages = new ArrayList<Message>(Arrays.asList(predefinedMessages));
+    int messageAmount = predefinedMessages.length;
 
     public static void main(String[] args) {
         if (args.length != 1)
@@ -43,7 +44,6 @@ public class Server implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        System.out.println("Begin request " + httpExchange.getRequestMethod());
         String response = "";
 
         if ("GET".equals(httpExchange.getRequestMethod())) {
@@ -61,8 +61,6 @@ public class Server implements HttpHandler {
         }
 
         sendResponse(httpExchange, response);
-        System.out.println("Response sent, size " + response.length());
-        System.out.println("End request " + httpExchange.getRequestMethod());
     }
 
     private String doGet(HttpExchange httpExchange) {
@@ -72,11 +70,9 @@ public class Server implements HttpHandler {
         if (query != null) {
             Map<String, String> map = queryToMap(query);
             String token = map.get("token");
-            System.out.println("Token " + token);
 
             if (token != null && !"".equals(token)) {
                 int index = messageExchange.getIndex(token);
-                System.out.println("Index " + index);
                 return messageExchange.getServerResponse(messages, index);
             } else {
                 return "Token query parameter is absent in url: " + query;
@@ -88,9 +84,8 @@ public class Server implements HttpHandler {
     private void doPost(HttpExchange httpExchange) {
         try {
             Message message = messageExchange.getClientMessage(httpExchange.getRequestBody());
-            System.out.println("Get Message from " + message.getUsername()
-                    + ": " + message.getText());
-            message.setId(messages.size());
+            message.setId(messageAmount);
+            messageAmount++;
             messages.add(message);
         } catch (ParseException e) {
             System.err.println("Invalid user message: " + httpExchange.getRequestBody() + " " + e.getMessage());
@@ -101,29 +96,28 @@ public class Server implements HttpHandler {
         String query = httpExchange.getRequestURI().getQuery();
         System.out.println("Query " + query);
 
-        if (query != null) {
-            Map<String, String> map = queryToMap(query);
-            String idToken = map.get("id");
-            if (idToken != null && !"".equals(idToken)) {
-                Integer id = Integer.parseInt(idToken);
-                Message message = messages.get(id);
-                System.out.println("Delete Message from " + message.getUsername()
-                        + ": " + message.getText());
-                message.deleteMessage();
-            }
+        if (query == null)
+            return;
+
+        Map<String, String> map = queryToMap(query);
+        String idToken = map.get("id");
+
+        if (idToken != null && !"".equals(idToken)) {
+            int id = Integer.parseInt(idToken);
+            for (Message message : messages)
+                if (id == message.getId()) {
+                    messages.add(new Message(message, true));
+                    return;
+                }
         }
     }
 
     private void doPut(HttpExchange httpExchange) {
         try {
             Message edited = messageExchange.getClientMessageEdit(httpExchange.getRequestBody());
+
             if(!"".equals(edited.getText())) {
-                Message message = messages.get(edited.getId());
-                System.out.println("Before Edit: Message from " + message.getUsername()
-                        + ": " + message.getText());
-                message.editMessage(edited.getText());
-                System.out.println("After Edit: Message from " + message.getUsername()
-                        + ": " + message.getText());
+                messages.add(edited);
             }
         } catch (ParseException e) {
             System.err.println("Invalid user message: " + httpExchange.getRequestBody() + " " + e.getMessage());
